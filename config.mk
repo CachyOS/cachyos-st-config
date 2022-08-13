@@ -13,19 +13,19 @@ X11LIB = /usr/X11R6/lib
 PKG_CONFIG = pkg-config
 
 # Uncomment this for the alpha patch / ALPHA_PATCH
-#XRENDER = -lXrender
+XRENDER = -lXrender
 
 # Uncomment this for the themed cursor patch / THEMED_CURSOR_PATCH
-#XCURSOR = -lXcursor
+XCURSOR = -lXcursor
 
 # Uncomment the lines below for the ligatures patch / LIGATURES_PATCH
-#LIGATURES_C = hb.c
-#LIGATURES_H = hb.h
-#LIGATURES_INC = `$(PKG_CONFIG) --cflags harfbuzz`
-#LIGATURES_LIBS = `$(PKG_CONFIG) --libs harfbuzz`
+LIGATURES_C = hb.c
+LIGATURES_H = hb.h
+LIGATURES_INC = `$(PKG_CONFIG) --cflags harfbuzz`
+LIGATURES_LIBS = `$(PKG_CONFIG) --libs harfbuzz`
 
 # Uncomment this for the SIXEL patch / SIXEL_PATCH
-#SIXEL_C = sixel.c sixel_hls.c
+SIXEL_C = sixel.c sixel_hls.c
 
 # includes and libs, uncomment harfbuzz for the ligatures patch
 INCS = -I$(X11INC) \
@@ -47,7 +47,6 @@ STLDFLAGS = $(LIBS) $(LDFLAGS)
 #LIBS = -L$(X11LIB) -lm -lX11 -lutil -lXft \
 #       `pkg-config --libs fontconfig` \
 #       `pkg-config --libs freetype2`
-#MANPREFIX = ${PREFIX}/man
 
 # compiler and linker
 # CC = c99

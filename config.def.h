@@ -5,24 +5,18 @@
  *
  * font: see http://freedesktop.org/software/fontconfig/fontconfig-user.html
  */
-static char *font = "Liberation Mono:pixelsize=12:antialias=true:autohint=true";
+static char *font = "Hack:pixelsize=12:antialias=true:autohint=true";
+/*static char *font = "FiraSans-Regular:pixelsize=12:antialias=true:autohint=true";*/
+/*static char *font = "Liberation Mono:pixelsize=12:antialias=true:autohint=true";*/
 #if FONT2_PATCH
 /* Spare fonts */
 static char *font2[] = {
+	"Fira Code:pixelsize=12:antialias=true:autohint=true",
+	"JetBrainsMonoNL-Regular:pixelsize=12:antialias=true:autohint=true",
 /*	"Inconsolata for Powerline:pixelsize=12:antialias=true:autohint=true", */
 /*	"Hack Nerd Font Mono:pixelsize=11:antialias=true:autohint=true", */
 };
 #endif // FONT2_PATCH
-
-#if BACKGROUND_IMAGE_PATCH
-/*
- * background image
- * expects farbfeld format
- * pseudo transparency fixes coordinates to the screen origin
- */
-static const char *bgfile = "/path/to/image.ff";
-static const int pseudotransparency = 0;
-#endif // BACKGROUND_IMAGE_PATCH
 
 #if RELATIVEBORDER_PATCH
 /* borderperc: percentage of cell width to use as a border
@@ -120,7 +114,7 @@ const int boxdraw = 0;
 const int boxdraw_bold = 0;
 
 /* braille (U28XX):  1: render as adjacent "pixels",  0: use font */
-const int boxdraw_braille = 0;
+const int boxdraw_braille = 1;
 #endif // BOXDRAW_PATCH
 
 /*
@@ -151,7 +145,7 @@ unsigned int tabspaces = 8;
 
 #if ALPHA_PATCH
 /* bg opacity */
-float alpha = 0.8;
+float alpha = 0.9;
 #if ALPHA_GRADIENT_PATCH
 float grad_alpha = 0.54; //alpha value that'll change
 float stat_alpha = 0.46; //constant alpha value that'll get added to grad_alpha
@@ -164,32 +158,32 @@ float alphaUnfocused = 0.6;
 /* Terminal colors (16 first used in escape sequence) */
 static const char *colorname[] = {
 	/* 8 normal colors */
-	"black",
-	"red3",
-	"green3",
-	"yellow3",
-	"blue2",
-	"magenta3",
-	"cyan3",
-	"gray90",
+	"#3b4252", /* black   */
+	"#bf616a", /* red     */
+	"#a3be8c", /* green   */
+	"#ebcb8b", /* yellow  */
+	"#81a1c1", /* blue    */
+	"#b48ead", /* magenta */
+	"#88c0d0", /* cyan    */
+	"#e5e9f0", /* white   */
 
 	/* 8 bright colors */
-	"gray50",
-	"red",
-	"green",
-	"yellow",
-	"#5c5cff",
-	"magenta",
-	"cyan",
-	"white",
+	"#4c566a", /* black   */
+	"#bf616a", /* red     */
+	"#a3be8c", /* green   */
+	"#ebcb8b", /* yellow  */
+	"#81a1c1", /* blue    */
+	"#b48ead", /* magenta */
+	"#8fbcbb", /* cyan    */
+	"#eceff4", /* white   */
 
 	[255] = 0,
 
 	/* more colors can be added after 255 to use with DefaultXX */
 	"#add8e6", /* 256 -> cursor */
 	"#555555", /* 257 -> rev cursor*/
-	"#000000", /* 258 -> bg */
-	"#e5e5e5", /* 259 -> fg */
+	"#2e3440", /* background */
+	"#d8dee9", /* foreground */
 };
 
 
@@ -256,8 +250,8 @@ static unsigned int cursorshape = 2;
  * Default columns and rows numbers
  */
 
-static unsigned int cols = 80;
-static unsigned int rows = 24;
+static unsigned int cols = 100;
+static unsigned int rows = 30;
 
 #if THEMED_CURSOR_PATCH
 /*
@@ -339,16 +333,14 @@ static uint forcemousemod = ShiftMask;
  * Beware that overloading Button1 will disable the selection.
  */
 static MouseShortcut mshortcuts[] = {
+	{ ControlMask,          Button4, zoom,           {.f = +1} },
+	{ ControlMask,          Button5, zoom,           {.f = -1} },
+	{ ControlMask,          Button2, zoomreset,      {.f =  0} },
 	#if UNIVERSCROLL_PATCH
 	/* mask                 button   function        argument       release   alt */
 	#else
 	/* mask                 button   function        argument       release */
 	#endif // UNIVERSCROLL_PATCH
-	#if CLIPBOARD_PATCH
-	{ XK_ANY_MOD,           Button2, clippaste,      {.i = 0},      1 },
-	#else
-	{ XK_ANY_MOD,           Button2, selpaste,       {.i = 0},      1 },
-	#endif // CLIPBOARD_PATCH
 	#if SCROLLBACK_MOUSE_PATCH
 	{ ShiftMask,            Button4, kscrollup,      {.i = 1} },
 	{ ShiftMask,            Button5, kscrolldown,    {.i = 1} },
@@ -371,11 +363,6 @@ static MouseShortcut mshortcuts[] = {
 #if SCROLLBACK_MOUSE_ALTSCREEN_PATCH
 static MouseShortcut maltshortcuts[] = {
 	/* mask                 button   function        argument       release */
-	#if CLIPBOARD_PATCH
-	{ XK_ANY_MOD,           Button2, clippaste,      {.i = 0},      1 },
-	#else
-	{ XK_ANY_MOD,           Button2, selpaste,       {.i = 0},      1 },
-	#endif // CLIPBOARD_PATCH
 	{ XK_ANY_MOD,           Button4, ttysend,        {.s = "\031"} },
 	{ XK_ANY_MOD,           Button5, ttysend,        {.s = "\005"} },
 };
@@ -397,22 +384,11 @@ static Shortcut shortcuts[] = {
 	{ ControlMask,          XK_Print,       toggleprinter,   {.i =  0} },
 	{ ShiftMask,            XK_Print,       printscreen,     {.i =  0} },
 	{ XK_ANY_MOD,           XK_Print,       printsel,        {.i =  0} },
-	{ TERMMOD,              XK_Prior,       zoom,            {.f = +1} },
-	{ TERMMOD,              XK_Next,        zoom,            {.f = -1} },
-	{ TERMMOD,              XK_Home,        zoomreset,       {.f =  0} },
+	{ ControlMask,          XK_equal,       zoom,            {.f = +1} },
+	{ ControlMask,          XK_minus,       zoom,            {.f = -1} },
+	{ ControlMask,          XK_apostrophe,  zoomreset,       {.f =  0} },
 	{ TERMMOD,              XK_C,           clipcopy,        {.i =  0} },
 	{ TERMMOD,              XK_V,           clippaste,       {.i =  0} },
-	#if SCROLLBACK_PATCH
-	{ ShiftMask,            XK_Page_Up,     kscrollup,       {.i = -1} },
-	{ ShiftMask,            XK_Page_Down,   kscrolldown,     {.i = -1} },
-	#endif // SCROLLBACK_PATCH
-	#if CLIPBOARD_PATCH
-	{ TERMMOD,              XK_Y,           clippaste,       {.i =  0} },
-	{ ShiftMask,            XK_Insert,      clippaste,       {.i =  0} },
-	#else
-	{ TERMMOD,              XK_Y,           selpaste,        {.i =  0} },
-	{ ShiftMask,            XK_Insert,      selpaste,        {.i =  0} },
-	#endif // CLIPBOARD_PATCH
 	{ TERMMOD,              XK_Num_Lock,    numlock,         {.i =  0} },
 	#if COPYURL_PATCH || COPYURL_HIGHLIGHT_SELECTED_URLS_PATCH
 	{ MODKEY,               XK_l,           copyurl,         {.i =  0} },
@@ -729,29 +705,3 @@ static char ascii_printable[] =
  */
 static char *plumb_cmd = "plumb";
 #endif // RIGHTCLICKTOPLUMB_PATCH
-
-#if UNDERCURL_PATCH
-/**
- * Undercurl style. Set UNDERCURL_STYLE to one of the available styles.
- *
- * Curly: Dunno how to draw it *shrug*
- *  _   _   _   _
- * ( ) ( ) ( ) ( )
- *	 (_) (_) (_) (_)
- *
- * Spiky:
- * /\  /\   /\	/\
- *   \/  \/	  \/
- *
- * Capped:
- *	_     _     _
- * / \   / \   / \
- *    \_/   \_/
- */
-// Available styles
-#define UNDERCURL_CURLY 0
-#define UNDERCURL_SPIKY 1
-#define UNDERCURL_CAPPED 2
-// Active style
-#define UNDERCURL_STYLE UNDERCURL_SPIKY
-#endif // UNDERCURL_PATCH
